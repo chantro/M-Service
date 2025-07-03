@@ -1,8 +1,12 @@
 let names = [];
+let isLoaded = false;  //지연 대응을 위해
+        async function data() {
+            const csvFile = await fetch('./names.csv');
+            if(!csvFile.ok){
+                throw new Error('CSV 파일 읽기 실패');
+            }
 
-        function data() {
-            const csvData = `Alexander,Alice,Amanda,Andrew,Angela,Anna,Anthony,Ashley,Barbara,Benjamin,Betty,Brian,Carol,Charles,Christopher,Daniel,David,Deborah,Donald,Donna,Dorothy,Edward,Elizabeth,Emily,Emma,Eric,Frances,Frank,Gary,George,Helen,Henry,James,Jason,Jennifer,Jessica,John,Joseph,Joshua,Karen,Kimberly,Larry,Laura,Linda,Lisa,Margaret,Maria,Mark,Mary,Matthew,Michael,Michelle,Nancy,Nicole,Noah,Olivia,Patricia,Paul,Rachel,Rebecca,Richard,Robert,Ronald,Ruth,Sandra,Sarah,Scott,Sharon,Sophia,Stephen,Steven,Susan,Thomas,Timothy,Victoria,Virginia,Walter,Wayne,William,Abigail,Adam,Adrian,Albert,Andrea,Annie,Arthur,Austin,Brenda,Bruce,Carl,Catherine,Christine,Cynthia, Diane,Douglas,Eugene,Hannah,Harold,Isabella,Jack,Jacob,Jane,Janet,Jerry,Joan,Jonathan,Juan,Julie,Justin,Katherine,Keith,Kevin,Laura,Louis,Martha,Mason,Nathan,Noah,Peter,Ralph,Raymond,Roger,Ryan,Samantha,Sean,Shirley,Tyler,Virginia,Willie`;
-
+            const csvData = await csvFile.text();
             return csvData.split(',').map(name => name.trim());
         }
 
@@ -96,11 +100,13 @@ let names = [];
         }
 
         function hQuery(query) {
+            if(!isLoaded) return; //아직 데이터 가져오는 중이면 무시
             renderResults(query);
         }
 
-        function i() {
-            names = data();
+        async function i() {
+            names = await data();
+            isLoaded = true;
             setup();
 
             console.log('애플리케이션이 초기화되었습니다.');
